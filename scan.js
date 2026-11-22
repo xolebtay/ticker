@@ -2,7 +2,9 @@
 // Receipt scanning: photo -> cleaned image -> Tesseract text -> draft receipt lines.
 // The parser is plain functions so it can be tested outside the browser (Node).
 
-const TESSERACT_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+// The text reader (Tesseract.js 5.1.1, verified via npm) is kept in this app's own tesseract/
+// folder, so scanning never loads code or data from other websites.
+const TESS_DIR = () => new URL("tesseract/", document.baseURI).href;
 
 // ── Image clean-up (crop to the paper, then black-and-white or grey) ─────────
 function loadImage(file) {
@@ -109,7 +111,7 @@ function loadTesseract() {
   if (window.Tesseract) return Promise.resolve(window.Tesseract);
   return new Promise((resolve, reject) => {
     const s = document.createElement("script");
-    s.src = TESSERACT_URL;
+    s.src = TESS_DIR() + "tesseract.min.js";
     s.onload = () => resolve(window.Tesseract);
     s.onerror = () => reject(new Error("Could not load the text reader. Scanning needs internet the first time."));
     document.head.appendChild(s);
@@ -130,6 +132,10 @@ async function scanReceipt(file, ctx, onStatus) {
   const T = await loadTesseract();
   let pass = 0;
   const worker = await T.createWorker("eng", 1, {
+    workerPath: TESS_DIR() + "worker.min.js",
+    corePath: TESS_DIR(),            // picks tesseract-core-(simd-)lstm.wasm.js from this folder
+    langPath: TESS_DIR(),            // eng.traineddata.gz
+    workerBlobURL: false,
     logger: m => { if (m.status === "recognizing text") onStatus(`Reading text, pass ${pass} of ${passes.length}... ${Math.round(m.progress * 100)}%`); }
   });
   const results = [];

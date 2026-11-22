@@ -34,4 +34,5 @@ storage. This repository contains the app files only - never any receipts or tri
 ## Built with
 
 Plain HTML, CSS and JavaScript - no build step. Receipt scanning uses
-[Tesseract.js](https://github.com/naptha/tesseract.js), which is loaded the first time a receipt is scanned.
+[Tesseract.js](https://github.com/naptha/tesseract.js) 5.1.1 (Apache 2.0 licence), kept in the
+`tesseract/` folder of this repository so the app never loads code from other websites.

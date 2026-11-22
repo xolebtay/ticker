@@ -1,5 +1,5 @@
 // Network first so updates show up straight away; cached copy is used when offline
-const CACHE = "ticker-v9";
+const CACHE = "ticker-v10";
 const ASSETS = ["./", "index.html", "style.css", "scan.js", "app.js", "manifest.json", "icon-180.png", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
